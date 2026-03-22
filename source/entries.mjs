@@ -9,10 +9,10 @@ const pages = [
 
 const publicPath = '';
 
-const appName = 'Laura Bird';
-const shortAppName = 'Laura Bird';
+const appName = 'Fly Laura, Fly!';
+const shortAppName = 'Fly Laura, Fly!';
 const GA4_MEASUREMENT_ID = false; // Set to false to disable
-const SITE_NAME = 'Laura Bird';
+const SITE_NAME = 'Fly Laura, Fly!';
 const PRODUCT_ICON = {
   href: './icon_512x512.png',
   width: '1024',

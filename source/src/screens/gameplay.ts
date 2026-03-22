@@ -9,14 +9,25 @@ import BannerInstruction from '../model/banner-instruction';
 import BirdModel from '../model/bird';
 import CounterModel from '../model/count';
 import FlashScreen from '../model/flash-screen';
+import { GAME_SPEED } from '../constants';
 import { IScreenChangerObject } from '../lib/screen-changer';
 import MainGameController from '../game';
 import ParentClass from '../abstracts/parent-class';
 import PipeGenerator from '../model/pipe-generator';
 import ScoreBoard from '../model/score-board';
 import Sfx from '../model/sfx';
+import SpriteDestructor from '../lib/sprite-destructor';
 
 export type IGameState = 'died' | 'playing' | 'none';
+
+interface IEuroCoin {
+  x: number;
+  y: number;
+  size: number;
+  wobble: number;
+  collected: boolean;
+}
+
 export default class GetReady extends ParentClass implements IScreenChangerObject {
   public scoreBoard: ScoreBoard;
 
@@ -31,6 +42,9 @@ export default class GetReady extends ParentClass implements IScreenChangerObjec
   private hideBird: boolean;
   private flashScreen: FlashScreen;
   private showScoreBoard: boolean;
+  private coins: IEuroCoin[];
+  private coinImage: HTMLImageElement | undefined;
+  private nextCoinSpawn: number;
 
   constructor(game: MainGameController) {
     super();
@@ -56,6 +70,9 @@ export default class GetReady extends ParentClass implements IScreenChangerObjec
     });
     this.hideBird = false;
     this.showScoreBoard = false;
+    this.coins = [];
+    this.coinImage = void 0;
+    this.nextCoinSpawn = .9;
 
     this.transition.setEvent([0.99, 1], this.reset.bind(this));
   }
@@ -68,6 +85,7 @@ export default class GetReady extends ParentClass implements IScreenChangerObjec
     this.setButtonEvent();
     this.flashScreen.init();
     this.transition.init();
+    this.coinImage = SpriteDestructor.asset('coin-shine-gold');
   }
 
   public reset(): void {
@@ -80,6 +98,8 @@ export default class GetReady extends ParentClass implements IScreenChangerObjec
     this.game.bgPause = false;
     this.hideBird = false;
     this.showScoreBoard = false;
+    this.coins = [];
+    this.nextCoinSpawn = .9;
     this.scoreBoard.hide();
     this.bird.reset();
   }
@@ -102,6 +122,7 @@ export default class GetReady extends ParentClass implements IScreenChangerObjec
 
     if (!this.bird.alive) {
       this.game.bgPause = true;
+      this.updateCoins(dt);
       this.bird.Update(dt);
       return;
     }
@@ -119,6 +140,7 @@ export default class GetReady extends ParentClass implements IScreenChangerObjec
     }
 
     this.bannerInstruction.Update(dt);
+    this.updateCoins(dt);
     this.pipeGenerator.Update(dt);
     this.bird.Update(dt);
 
@@ -153,6 +175,8 @@ export default class GetReady extends ParentClass implements IScreenChangerObjec
         this.count.setNum(this.bird.score);
         this.count.Display(context);
       }
+
+      this.displayCoins(context);
 
       if (!this.hideBird) this.bird.Display(context);
 
@@ -197,5 +221,67 @@ export default class GetReady extends ParentClass implements IScreenChangerObjec
   }
   public startAtKeyBoardEvent(): void {
     if (this.gameState === 'died') this.scoreBoard.triggerPlayATKeyboardEvent();
+  }
+
+  private spawnCoin(): void {
+    if (!this.coinImage) return;
+
+    const size = this.canvasSize.width * 0.09;
+    this.coins.push({
+      x: this.canvasSize.width + size,
+      y: this.canvasSize.height * (0.23 + Math.random() * 0.42),
+      size,
+      wobble: Math.random() * Math.PI * 2,
+      collected: false
+    });
+  }
+
+  private updateCoins(dt: number): void {
+    if (this.state === 'playing' && this.bird.alive) {
+      this.nextCoinSpawn -= dt;
+      if (this.nextCoinSpawn <= 0) {
+        this.spawnCoin();
+        this.nextCoinSpawn = 1.25 + Math.random() * 1.4;
+      }
+    }
+
+    const speed = this.canvasSize.width * GAME_SPEED;
+    const birdX = this.bird.coordinate.x;
+    const birdY = this.bird.coordinate.y;
+
+    for (const coin of this.coins) {
+      coin.x -= speed * dt;
+      coin.y += Math.sin(performance.now() / 220 + coin.wobble) * 8 * dt;
+
+      if (!coin.collected) {
+        const dx = coin.x - birdX;
+        const dy = coin.y - birdY;
+        const hitRadius = coin.size * 0.5;
+        if (dx * dx + dy * dy < hitRadius * hitRadius) {
+          coin.collected = true;
+          this.bird.score += 1;
+          Sfx.point();
+        }
+      }
+    }
+
+    this.coins = this.coins.filter((coin) => !coin.collected && coin.x + coin.size > -20);
+  }
+
+  private displayCoins(context: CanvasRenderingContext2D): void {
+    if (!this.coinImage) return;
+
+    for (const coin of this.coins) {
+      const x = coin.x - coin.size / 2;
+      const y = coin.y - coin.size / 2;
+      context.drawImage(this.coinImage, x, y, coin.size, coin.size);
+      context.save();
+      context.fillStyle = '#6f4b00';
+      context.font = `bold ${Math.max(12, coin.size * 0.72)}px sans-serif`;
+      context.textAlign = 'center';
+      context.textBaseline = 'middle';
+      context.fillText('€', coin.x, coin.y + coin.size * 0.03);
+      context.restore();
+    }
   }
 }

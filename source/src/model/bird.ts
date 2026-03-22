@@ -275,41 +275,41 @@ export default class Bird extends ParentClass {
       return (this.flags & Bird.FLAG_IS_ALIVE) === 0;
     }
 
-    const newDim = this.rotatedDimension();
-    const boundary = newDim.width - newDim.height / 2;
+    const birdCenterY = this.coordinate.y + this.scaled.height * 0.05;
+    const birdHalfWidth = this.scaled.width * 0.56;
+    const birdHalfHeight = this.scaled.height * 0.48;
+    const birdLeft = this.coordinate.x - birdHalfWidth;
+    const birdRight = this.coordinate.x + birdHalfWidth;
+    const birdTop = birdCenterY - birdHalfHeight;
+    const birdBottom = birdCenterY + birdHalfHeight;
 
     for (const pipe of pipes) {
       try {
-        // Midpoint Holl Coordinate
         const hcx = pipe.coordinate.x;
-        const hcy = pipe.coordinate.y;
-        const radius = pipe.hollSize / 2; // Radius
-        const width = Pipe.pipeSize.width / 2; // Half Size
+        const halfWidth = pipe.collisionHalfWidth();
+        const pipeRight = hcx + halfWidth;
 
-        // Skip past pipe
-        // ---------- Out
-        if (hcx + width < this.coordinate.x - boundary) continue;
-
-        // Is Inside of Pipes?
-        // In ----------
-        if (Math.abs(hcx - width) <= this.coordinate.x + boundary) {
-          // Will get score after passing the
-          // center width of pipe
-          if (hcx < this.coordinate.x && !pipe.isPassed) {
-            this.score++;
-            Sfx.point();
-            pipe.isPassed = true;
-          }
-
-          // Top Pipe ---------- Bottom Pipe
-          if (Math.abs(hcy - radius) >= this.coordinate.y - newDim.height || hcy + radius <= this.coordinate.y + newDim.height) {
-            this.flags &= ~Bird.FLAG_IS_ALIVE;
-            this.causeOfDeath = 2;
-            break;
-          }
+        if (!pipe.isPassed && pipeRight < birdLeft) {
+          this.score++;
+          Sfx.point();
+          pipe.isPassed = true;
         }
 
-        // Only the first pipe should be check
+        if (pipeRight < birdLeft) continue;
+
+        if (
+          pipe.collidesWithRect({
+            left: birdLeft,
+            right: birdRight,
+            top: birdTop,
+            bottom: birdBottom
+          })
+        ) {
+          this.flags &= ~Bird.FLAG_IS_ALIVE;
+          this.causeOfDeath = 2;
+          break;
+        }
+
         break;
       } catch (err) {}
     }

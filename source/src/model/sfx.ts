@@ -3,6 +3,7 @@ import sfDie from '../assets/audio/die.ogg';
 import sfHit from '../assets/audio/hit.ogg';
 import sfPoint from '../assets/audio/point.ogg';
 import sfSwoosh from '../assets/audio/swooshing.ogg';
+import sfTantiAuguri from '../assets/audio/tanti_auguri.ogg';
 import sfWing from '../assets/audio/wing.ogg';
 
 export default class Sfx {
@@ -39,5 +40,10 @@ export default class Sfx {
   public static wing(): void {
     WebSfx.volume(Sfx.currentVolume);
     WebSfx.play(sfWing);
+  }
+
+  public static tantiAuguri(): void {
+    WebSfx.volume(Math.min(1, Sfx.currentVolume));
+    WebSfx.play(sfTantiAuguri);
   }
 }

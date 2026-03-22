@@ -8,6 +8,7 @@ import sfDie from './assets/audio/die.ogg';
 import sfHit from './assets/audio/hit.ogg';
 import sfPoint from './assets/audio/point.ogg';
 import sfSwoosh from './assets/audio/swooshing.ogg';
+import sfTantiAuguri from './assets/audio/tanti_auguri.ogg';
 import sfWing from './assets/audio/wing.ogg';
 
 export default (callback: IEmptyFunction): void => {
@@ -107,7 +108,8 @@ export default (callback: IEmptyFunction): void => {
         wing: sfWing,
         swoosh: sfSwoosh,
         die: sfDie,
-        point: sfPoint
+        point: sfPoint,
+        tanti_auguri: sfTantiAuguri
       },
       loadCallback
     );

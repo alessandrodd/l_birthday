@@ -6,6 +6,8 @@ import SpriteDestructor from '../lib/sprite-destructor';
 import { Fly, BounceIn, TimingEvent } from '../lib/animation';
 import Storage from '../lib/storage';
 import ButtonsHandler from '../buttons';
+import Sfx from './sfx';
+import { PASSWORD_TARGET_SCORE, SECRET_PASSWORD } from '../game-config';
 
 export default class ScoreBoard extends ParentObject {
   private static readonly FLAG_SHOW_BANNER = 0b0001;
@@ -22,6 +24,7 @@ export default class ScoreBoard extends ParentObject {
   private currentScore: number;
   private currentGeneratedNumber: number;
   private currentHighScore: number;
+  private rewardUnlocked: boolean;
   private TimingEventAnim: TimingEvent;
   private spark: SparkModel;
 
@@ -38,6 +41,7 @@ export default class ScoreBoard extends ParentObject {
     this.currentHighScore = 0;
     this.currentGeneratedNumber = 0;
     this.currentScore = 0;
+    this.rewardUnlocked = false;
     this.FlyInAnim = new Fly({
       duration: 500,
       from: {
@@ -164,6 +168,7 @@ export default class ScoreBoard extends ParentObject {
 
       this.displayScore(context, anim, sbScaled);
       this.displayBestScore(context, anim, sbScaled, (this.flags & ScoreBoard.FLAG_NEW_HIGH_SCORE) !== 0);
+      this.displayReward(context, anim, sbScaled);
 
       if (this.FlyInAnim.status.complete && !this.FlyInAnim.status.running) {
         this.TimingEventAnim.start();
@@ -190,6 +195,9 @@ export default class ScoreBoard extends ParentObject {
     this.flags |= ScoreBoard.FLAG_SHOW_SCOREBOARD;
     this.FlyInAnim.start();
     this.spark.doSpark();
+    if (this.rewardUnlocked) {
+      Sfx.tantiAuguri();
+    }
   }
 
   public showButtons(): void {
@@ -198,10 +206,6 @@ export default class ScoreBoard extends ParentObject {
     for (const btn of ButtonsHandler.btns) {
       btn.active = true;
     }
-
-    // skip rate button
-    ButtonsHandler.rate.active = false;
-    ButtonsHandler.rate.hidden = true;
   }
 
   private setHighScore(num: number): void {
@@ -211,6 +215,7 @@ export default class ScoreBoard extends ParentObject {
 
   public setScore(num: number): void {
     this.currentScore = num;
+    this.rewardUnlocked = num >= PASSWORD_TARGET_SCORE;
   }
 
   private addMedal(context: CanvasRenderingContext2D, coord: ICoordinate, parentSize: IDimension): void {
@@ -312,6 +317,32 @@ export default class ScoreBoard extends ParentObject {
     context.drawImage(this.images.get('new-icon')!, coord.x * 0.73, coord.y * 0.922, toastSize.width, toastSize.height);
   }
 
+  private displayReward(context: CanvasRenderingContext2D, coord: ICoordinate, parentSize: IDimension): void {
+    if (!this.rewardUnlocked) return;
+
+    const boxWidth = parentSize.width * 0.95;
+    const boxHeight = parentSize.height * 0.33;
+    const x = coord.x + parentSize.width / 2 - boxWidth / 2;
+    const y = coord.y + parentSize.height * 1.02;
+
+    context.save();
+    context.fillStyle = 'rgba(28, 18, 18, 0.88)';
+    context.fillRect(x, y, boxWidth, boxHeight);
+    context.strokeStyle = '#f3cf4b';
+    context.lineWidth = 3;
+    context.strokeRect(x, y, boxWidth, boxHeight);
+    context.textAlign = 'center';
+    context.fillStyle = '#fff4cf';
+    context.font = `bold ${Math.max(13, parentSize.width * 0.052)}px sans-serif`;
+    context.fillText('You made it!! :)', x + boxWidth / 2, y + boxHeight * 0.28);
+    context.font = `${Math.max(10, parentSize.width * 0.04)}px sans-serif`;
+    context.fillText(`You reached ${PASSWORD_TARGET_SCORE}+ points. Secret password:`, x + boxWidth / 2, y + boxHeight * 0.54);
+    context.font = `bold ${Math.max(12, parentSize.width * 0.06)}px monospace`;
+    context.fillStyle = '#ffdf73';
+    context.fillText(SECRET_PASSWORD, x + boxWidth / 2, y + boxHeight * 0.8);
+    context.restore();
+  }
+
   /**
    * Hide all at once
    * */
@@ -323,6 +354,7 @@ export default class ScoreBoard extends ParentObject {
     }
 
     this.currentGeneratedNumber = 0;
+    this.rewardUnlocked = false;
     this.FlyInAnim.reset();
     this.BounceInAnim.reset();
     this.TimingEventAnim.reset();

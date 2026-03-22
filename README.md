@@ -1,4 +1,4 @@
-# Laura Flappy
+# Fly Laura, Fly!
 
 Laura-themed Flappy Bird clone based on the upstream project at `jxmked/Flappybird`.
 

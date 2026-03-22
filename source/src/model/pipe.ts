@@ -13,7 +13,20 @@ export interface IPipeScaled {
 }
 
 export type IPipeColor = 'ecb' | 'japan';
-export type IPipeRecords = Map<string, CanvasImageSource>;
+export type IPipeRecords = Map<string, HTMLCanvasElement>;
+
+interface IAlphaMask {
+  data: Uint8ClampedArray;
+  width: number;
+  height: number;
+}
+
+interface ICollisionRect {
+  left: number;
+  right: number;
+  top: number;
+  bottom: number;
+}
 
 const SPRITE_DIMENSION = {
   width: 180,
@@ -315,19 +328,20 @@ export default class Pipe extends ParentClass {
     height: 0
   };
 
-  private static readonly spriteCache: IPipeRecords = new Map<string, CanvasImageSource>();
+  private static readonly spriteCache = new Map<string, HTMLCanvasElement>();
+  private static readonly alphaMasks: Map<string, IAlphaMask> = new Map<string, IAlphaMask>();
 
   private scaled: IPipeScaled;
   public hollSize: number;
   public pipePosition: IPipePairPosition;
   public isPassed: boolean;
 
-  private images: IPipeRecords;
+  private images: Map<string, HTMLCanvasElement>;
   private color: IPipeColor;
 
   constructor() {
     super();
-    this.images = new Map<string, CanvasImageSource>();
+    this.images = new Map<string, HTMLCanvasElement>();
     this.color = 'ecb';
     this.hollSize = 0;
     this.pipePosition = {
@@ -346,10 +360,10 @@ export default class Pipe extends ParentClass {
     if (Pipe.spriteCache.size === 0) {
       const ecb = createEcbSprite();
       const japan = createJapanSprite();
-      Pipe.spriteCache.set('ecb.bottom', ecb);
-      Pipe.spriteCache.set('ecb.top', createFlippedSprite(ecb, ecb.width, ecb.height));
-      Pipe.spriteCache.set('japan.bottom', japan);
-      Pipe.spriteCache.set('japan.top', createFlippedSprite(japan, japan.width, japan.height));
+      Pipe.registerSprite('ecb.bottom', ecb);
+      Pipe.registerSprite('ecb.top', createFlippedSprite(ecb, ecb.width, ecb.height));
+      Pipe.registerSprite('japan.bottom', japan);
+      Pipe.registerSprite('japan.top', createFlippedSprite(japan, japan.width, japan.height));
     }
 
     this.images = Pipe.spriteCache;
@@ -395,6 +409,100 @@ export default class Pipe extends ParentClass {
 
   public use(select: IPipeColor): void {
     this.color = select;
+  }
+
+  public collisionHalfWidth(): number {
+    const factor = this.color === 'ecb' ? 0.5 : 0.46;
+    return (Pipe.pipeSize.width * factor) / 2;
+  }
+
+  public collidesWithRect(rect: ICollisionRect): boolean {
+    const width = Pipe.pipeSize.width / 2;
+    const posX = this.coordinate.x;
+    const posY = this.coordinate.y;
+    const radius = this.hollSize / 2;
+
+    return (
+      this.collidesWithSprite(
+        `${this.color}.top`,
+        rect,
+        posX - width,
+        -(this.scaled.top.height - Math.abs(posY - radius)),
+        this.scaled.top.width,
+        this.scaled.top.height
+      ) ||
+      this.collidesWithSprite(
+        `${this.color}.bottom`,
+        rect,
+        posX - width,
+        posY + radius,
+        this.scaled.bottom.width,
+        this.scaled.bottom.height
+      )
+    );
+  }
+
+  private collidesWithSprite(
+    key: string,
+    rect: ICollisionRect,
+    spriteLeft: number,
+    spriteTop: number,
+    spriteWidth: number,
+    spriteHeight: number
+  ): boolean {
+    const spriteRight = spriteLeft + spriteWidth;
+    const spriteBottom = spriteTop + spriteHeight;
+    const overlapLeft = Math.max(rect.left, spriteLeft);
+    const overlapRight = Math.min(rect.right, spriteRight);
+    const overlapTop = Math.max(rect.top, spriteTop);
+    const overlapBottom = Math.min(rect.bottom, spriteBottom);
+
+    if (overlapLeft >= overlapRight || overlapTop >= overlapBottom) {
+      return false;
+    }
+
+    const mask = Pipe.alphaMasks.get(key);
+    const sprite = this.images.get(key);
+
+    if (!mask || !sprite) {
+      return false;
+    }
+
+    const sampleStep = Math.max(3, Math.min(overlapRight - overlapLeft, overlapBottom - overlapTop) / 3);
+
+    for (let py = overlapTop; py <= overlapBottom; py += sampleStep) {
+      for (let px = overlapLeft; px <= overlapRight; px += sampleStep) {
+        const sx = Math.floor(((px - spriteLeft) / spriteWidth) * mask.width);
+        const sy = Math.floor(((py - spriteTop) / spriteHeight) * mask.height);
+        if (Pipe.maskHasAlpha(mask, sx, sy)) {
+          return true;
+        }
+      }
+    }
+
+    return (
+      Pipe.maskHasAlpha(mask, Math.floor(((overlapLeft - spriteLeft) / spriteWidth) * mask.width), Math.floor(((overlapTop - spriteTop) / spriteHeight) * mask.height)) ||
+      Pipe.maskHasAlpha(mask, Math.floor(((overlapRight - spriteLeft) / spriteWidth) * mask.width), Math.floor(((overlapTop - spriteTop) / spriteHeight) * mask.height)) ||
+      Pipe.maskHasAlpha(mask, Math.floor(((overlapLeft - spriteLeft) / spriteWidth) * mask.width), Math.floor(((overlapBottom - spriteTop) / spriteHeight) * mask.height)) ||
+      Pipe.maskHasAlpha(mask, Math.floor(((overlapRight - spriteLeft) / spriteWidth) * mask.width), Math.floor(((overlapBottom - spriteTop) / spriteHeight) * mask.height))
+    );
+  }
+
+  private static registerSprite(key: string, sprite: HTMLCanvasElement): void {
+    Pipe.spriteCache.set(key, sprite);
+    const context = sprite.getContext('2d')!;
+    const imageData = context.getImageData(0, 0, sprite.width, sprite.height);
+    Pipe.alphaMasks.set(key, {
+      data: imageData.data,
+      width: sprite.width,
+      height: sprite.height
+    });
+  }
+
+  private static maskHasAlpha(mask: IAlphaMask, x: number, y: number): boolean {
+    const clampedX = Math.max(0, Math.min(mask.width - 1, x));
+    const clampedY = Math.max(0, Math.min(mask.height - 1, y));
+    return mask.data[(clampedY * mask.width + clampedX) * 4 + 3] > 40;
   }
 
   public Update(dt: number): void {

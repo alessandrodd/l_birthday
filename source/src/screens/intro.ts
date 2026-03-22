@@ -8,27 +8,21 @@
  * connected to Google Play Games or Apple Game Center
  * */
 
-import { rescaleDim } from '../utils';
-
 import BirdModel from '../model/bird';
 import { IScreenChangerObject } from '../lib/screen-changer';
 import ParentClass from '../abstracts/parent-class';
-import SpriteDestructor from '../lib/sprite-destructor';
 import { ENV } from '../constants';
 import ButtonsHandler from '../buttons';
+import { GAME_TITLE, PASSWORD_TARGET_SCORE } from '../game-config';
 
 export default class Introduction extends ParentClass implements IScreenChangerObject {
   public btnHandler: ButtonsHandler;
 
   private bird: BirdModel;
-  private flappyBirdBanner: HTMLImageElement | undefined;
-  private copyright: HTMLImageElement | undefined;
 
   constructor() {
     super();
     this.bird = new BirdModel();
-    this.flappyBirdBanner = void 0;
-    this.copyright = void 0;
     this.btnHandler = new ButtonsHandler();
   }
 
@@ -40,9 +34,6 @@ export default class Introduction extends ParentClass implements IScreenChangerO
     for (const btn of ButtonsHandler.btns) {
       btn.active = true;
     }
-
-    this.flappyBirdBanner = SpriteDestructor.asset('banner-flappybird');
-    this.copyright = SpriteDestructor.asset('copyright');
   }
 
   public resize(screen_dimension: IDimension): void {
@@ -70,43 +61,50 @@ export default class Introduction extends ParentClass implements IScreenChangerO
 
     this.bird.Display(context);
 
-    // Flappy Bird Banner
-    const fbbScaled = rescaleDim(
-      {
-        width: this.flappyBirdBanner!.width,
-        height: this.flappyBirdBanner!.height
-      },
-      { width: this.canvasSize.width * 0.67 }
-    );
-
-    context.drawImage(
-      this.flappyBirdBanner!,
-      this.canvasSize.width * 0.5 - fbbScaled.width / 2,
-      this.canvasSize.height * 0.28 - fbbScaled.height / 2,
-      fbbScaled.width,
-      fbbScaled.height
-    );
-    // ----------------------------------
-
-    // Copyright
-    const crScaled = rescaleDim(
-      {
-        width: this.copyright!.width,
-        height: this.copyright!.height
-      },
-      { width: this.canvasSize.width * 0.44 }
-    );
-
-    context.drawImage(
-      this.copyright!,
-      this.canvasSize.width * 0.5 - crScaled.width / 2,
-      this.canvasSize.height * 0.806 - crScaled.height / 2,
-      crScaled.width,
-      crScaled.height
-    );
-    // ----------------------------------
+    this.drawTitle(context);
+    this.drawGoalText(context);
 
     this.insertAppVersion(context);
+  }
+
+  private drawTitle(context: CanvasRenderingContext2D): void {
+    const size = this.canvasSize.width * 0.12;
+    const x = this.canvasSize.width * 0.5;
+    const y = this.canvasSize.height * 0.28;
+
+    context.save();
+    context.textAlign = 'center';
+    context.lineJoin = 'round';
+    context.lineWidth = this.canvasSize.width * 0.02;
+    context.strokeStyle = '#62351e';
+    context.fillStyle = '#f7e3ac';
+    context.font = `bold ${size}px "Trebuchet MS", sans-serif`;
+    context.strokeText(GAME_TITLE, x, y);
+    context.fillText(GAME_TITLE, x, y);
+    context.restore();
+  }
+
+  private drawGoalText(context: CanvasRenderingContext2D): void {
+    const x = this.canvasSize.width * 0.5;
+    const y = this.canvasSize.height * 0.565;
+    const boxWidth = this.canvasSize.width * 0.78;
+    const boxHeight = this.canvasSize.height * 0.14;
+    const left = x - boxWidth / 2;
+
+    context.save();
+    context.fillStyle = 'rgba(32, 23, 33, 0.7)';
+    context.fillRect(left, y - boxHeight / 2, boxWidth, boxHeight);
+    context.strokeStyle = 'rgba(255, 240, 186, 0.38)';
+    context.lineWidth = 2;
+    context.strokeRect(left, y - boxHeight / 2, boxWidth, boxHeight);
+    context.textAlign = 'center';
+    context.fillStyle = '#f8f2df';
+    context.font = `bold ${this.canvasSize.width * 0.032}px sans-serif`;
+    context.fillText(`Are you ready for a challenge? :)`, x, y - 22);
+    context.font = `${this.canvasSize.width * 0.028}px sans-serif`;
+    context.fillText(`Reach at least ${PASSWORD_TARGET_SCORE} points`, x, y + 16);
+    context.fillText(`to unlock the secret password after Game Over`, x, y + 48);
+    context.restore();
   }
 
   private insertAppVersion(context: CanvasRenderingContext2D): void {

@@ -25,12 +25,12 @@
       "purpose": "maskable"
     }
   ],
-  "name": "Laura Bird",
-  "short_name": "Laura Bird",
+  "name": "Fly Laura, Fly!",
+  "short_name": "Fly Laura, Fly!",
   "orientation": "portrait",
   "display": "standalone",
   "start_url": ".",
-  "description": "Flappy Bird clone with Laura as the flyer",
+  "description": "Fly Laura, Fly! birthday game with Laura as the flyer",
   "background_color": "#3a3a3c",
   "theme_color": "#272738"
 }

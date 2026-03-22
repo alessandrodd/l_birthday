@@ -1,6 +1,6 @@
 {
   "name": "laura-flappy",
-  "description": "Flappy Bird clone with Laura as the flyer",
+  "description": "Fly Laura, Fly! birthday game with Laura as the flyer",
   "version": "0.7.7",
   "main": "webpack.config.mjs",
   "type": "module",

@@ -117,13 +117,15 @@ export default class WebSfx {
    * Loading Assets Section
    * */
   private static load(files: IWebSfxObject, complete: IEmptyFunction, level = 0): void {
-    const loading = [];
     const entries = Object.entries(files);
+    const loading = [];
+    const start = level * WebSfx.concurrentDownload;
+    const end = Math.min(entries.length, start + WebSfx.concurrentDownload);
 
     /**
      * Do not load all files at once.
      * */
-    for (let i = level * WebSfx.concurrentDownload; i < Math.min(entries.length, WebSfx.concurrentDownload); i++) {
+    for (let i = start; i < end; i++) {
       // Validating files
       if (!/\.(wav|ogg|mp3)$/i.test(entries[i][1])) {
         throw new TypeError("WebSfx.contructor accepts 'wav|ogg|mp3' type of files");
