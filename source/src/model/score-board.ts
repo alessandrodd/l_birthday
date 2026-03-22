@@ -321,9 +321,9 @@ export default class ScoreBoard extends ParentObject {
     if (!this.rewardUnlocked) return;
 
     const boxWidth = parentSize.width * 0.95;
-    const boxHeight = parentSize.height * 0.33;
+    const boxHeight = parentSize.height * 0.58;
     const x = coord.x + parentSize.width / 2 - boxWidth / 2;
-    const y = coord.y + parentSize.height * 1.02;
+    const y = coord.y + parentSize.height * 0.9;
 
     context.save();
     context.fillStyle = 'rgba(28, 18, 18, 0.88)';
@@ -334,12 +334,17 @@ export default class ScoreBoard extends ParentObject {
     context.textAlign = 'center';
     context.fillStyle = '#fff4cf';
     context.font = `bold ${Math.max(13, parentSize.width * 0.052)}px sans-serif`;
-    context.fillText('You made it!! :)', x + boxWidth / 2, y + boxHeight * 0.28);
-    context.font = `${Math.max(10, parentSize.width * 0.04)}px sans-serif`;
-    context.fillText(`You reached ${PASSWORD_TARGET_SCORE}+ points. Secret password:`, x + boxWidth / 2, y + boxHeight * 0.54);
+    context.fillText('You made it!! :)', x + boxWidth / 2, y + boxHeight * 0.12);
+    context.font = `${Math.max(10, parentSize.width * 0.038)}px sans-serif`;
+    context.fillText(`You reached ${PASSWORD_TARGET_SCORE}+ points. Secret password:`, x + boxWidth / 2, y + boxHeight * 0.29);
     context.font = `bold ${Math.max(12, parentSize.width * 0.06)}px monospace`;
     context.fillStyle = '#ffdf73';
-    context.fillText(SECRET_PASSWORD, x + boxWidth / 2, y + boxHeight * 0.8);
+    context.fillText(SECRET_PASSWORD, x + boxWidth / 2, y + boxHeight * 0.45);
+    context.fillStyle = '#fff4cf';
+    context.font = `${Math.max(10, parentSize.width * 0.036)}px sans-serif`;
+    context.fillText('Wishing you the happiest of birthdays,', x + boxWidth / 2, y + boxHeight * 0.64);
+    context.fillText('and congratulations again for signing the new contract :)', x + boxWidth / 2, y + boxHeight * 0.77);
+    context.fillText('Enjoy!', x + boxWidth / 2, y + boxHeight * 0.89);
     context.restore();
   }
 
