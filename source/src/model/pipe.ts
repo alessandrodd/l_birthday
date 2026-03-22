@@ -76,18 +76,18 @@ function drawWindowGrid(
 
 function drawEuroFlag(context: CanvasRenderingContext2D, x: number, y: number): void {
   context.fillStyle = '#2f5ca9';
-  context.fillRect(x, y, 24, 16);
+  context.fillRect(x, y, 30, 20);
   context.strokeStyle = '#1c3764';
   context.lineWidth = 1;
-  context.strokeRect(x, y, 24, 16);
+  context.strokeRect(x, y, 30, 20);
   context.fillStyle = '#f3cf4b';
 
   for (let index = 0; index < 8; index++) {
     const angle = (Math.PI * 2 * index) / 8;
-    const px = x + 12 + Math.cos(angle) * 5;
-    const py = y + 8 + Math.sin(angle) * 5;
+    const px = x + 15 + Math.cos(angle) * 6.4;
+    const py = y + 10 + Math.sin(angle) * 6.4;
     context.beginPath();
-    context.arc(px, py, 1.1, 0, Math.PI * 2);
+    context.arc(px, py, 1.3, 0, Math.PI * 2);
     context.fill();
   }
 }
@@ -215,71 +215,96 @@ function createJapanSprite(): HTMLCanvasElement {
   context.shadowOffsetY = 4;
 
   const bodyGradient = context.createLinearGradient(0, 0, 0, SPRITE_DIMENSION.height);
-  bodyGradient.addColorStop(0, '#5f4038');
-  bodyGradient.addColorStop(0.35, '#4b312a');
-  bodyGradient.addColorStop(1, '#321d18');
-
+  bodyGradient.addColorStop(0, '#8d5d49');
+  bodyGradient.addColorStop(0.45, '#744a3c');
+  bodyGradient.addColorStop(1, '#513127');
   context.fillStyle = bodyGradient;
-  context.fillRect(58, 104, 64, 300);
+  context.fillRect(34, 118, 112, 286);
 
-  context.fillStyle = '#6b463b';
-  context.fillRect(64, 70, 52, 44);
-  context.fillRect(76, 32, 28, 32);
+  context.fillStyle = '#3f2c25';
+  context.fillRect(42, 338, 96, 52);
 
-  context.fillStyle = '#7c5544';
+  context.fillStyle = '#5a3a30';
+  context.fillRect(52, 70, 76, 36);
+
+  context.fillStyle = '#d6d3ce';
   context.beginPath();
-  context.moveTo(42, 64);
-  context.lineTo(138, 64);
-  context.lineTo(122, 84);
-  context.lineTo(58, 84);
+  context.moveTo(24, 92);
+  context.lineTo(156, 92);
+  context.lineTo(146, 102);
+  context.lineTo(34, 102);
   context.closePath();
   context.fill();
 
-  context.beginPath();
-  context.moveTo(24, 96);
-  context.lineTo(156, 96);
-  context.lineTo(142, 122);
-  context.lineTo(38, 122);
-  context.closePath();
-  context.fill();
+  context.fillStyle = '#6e4a3d';
+  context.fillRect(30, 102, 120, 16);
 
-  context.beginPath();
-  context.moveTo(66, 24);
-  context.lineTo(114, 24);
-  context.lineTo(104, 38);
-  context.lineTo(76, 38);
-  context.closePath();
-  context.fill();
+  context.fillStyle = '#a26e58';
+  for (let x = 44; x <= 128; x += 21) {
+    context.fillRect(x, 120, 5, 216);
+  }
+
+  context.fillStyle = '#b78b78';
+  context.fillRect(40, 144, 100, 50);
+
+  context.fillStyle = '#4b5965';
+  context.fillRect(46, 150, 88, 38);
+
+  context.fillStyle = '#6d747c';
+  for (let x = 46; x <= 126; x += 14) {
+    context.fillRect(x, 150, 3, 38);
+  }
+
+  context.fillStyle = '#34383e';
+  for (let y = 126; y <= 326; y += 22) {
+    context.fillRect(44, y, 92, 2);
+  }
 
   context.shadowBlur = 0;
-  context.fillStyle = '#d9b34d';
-  for (let row = 0; row < 22; row++) {
-    for (let col = 0; col < 3; col++) {
-      context.fillRect(70 + col * 14, 126 + row * 11, 6, 6);
+  context.fillStyle = '#49505a';
+  for (let row = 0; row < 9; row++) {
+    for (let col = 0; col < 4; col++) {
+      context.fillRect(58 + col * 17, 206 + row * 16, 10, 10);
+      context.fillStyle = '#8ca0b0';
+      context.fillRect(60 + col * 17, 208 + row * 16, 6, 5);
+      context.fillStyle = '#49505a';
     }
   }
 
-  context.fillStyle = '#f0d37d';
-  context.fillRect(78, 38, 24, 24);
-  context.fillStyle = '#cda33c';
-  context.fillRect(86, 12, 8, 18);
+  context.fillStyle = '#4b5259';
+  for (let row = 0; row < 4; row++) {
+    for (let col = 0; col < 3; col++) {
+      context.fillRect(60 + col * 22, 132 + row * 14, 12, 9);
+      context.fillStyle = '#93a7b7';
+      context.fillRect(62 + col * 22, 134 + row * 14, 7, 4);
+      context.fillStyle = '#4b5259';
+    }
+  }
 
-  context.fillStyle = '#9d7f37';
-  context.fillRect(56, 392, 68, 12);
+  context.fillStyle = '#35312f';
+  for (let col = 0; col < 6; col++) {
+    context.fillRect(42 + col * 16, 344, 10, 40);
+  }
+
+  context.fillStyle = '#d6d3ce';
+  context.fillRect(44, 62, 92, 4);
+  context.fillRect(50, 66, 80, 3);
+
+  context.fillStyle = '#26282c';
+  context.fillRect(62, 48, 56, 18);
+  context.fillStyle = '#c7c4bc';
+  context.fillRect(70, 53, 14, 4);
+  context.fillRect(90, 53, 10, 4);
+  context.fillRect(104, 52, 6, 7);
 
   context.strokeStyle = 'rgba(255, 224, 147, 0.35)';
   context.lineWidth = 1.5;
   context.beginPath();
-  context.moveTo(32, 104);
-  context.lineTo(148, 104);
-  context.moveTo(50, 72);
-  context.lineTo(130, 72);
+  context.moveTo(30, 104);
+  context.lineTo(150, 104);
+  context.moveTo(42, 118);
+  context.lineTo(138, 118);
   context.stroke();
-
-  context.fillStyle = '#b33b35';
-  context.beginPath();
-  context.arc(124, 146, 10, 0, Math.PI * 2);
-  context.fill();
 
   return canvas;
 }
