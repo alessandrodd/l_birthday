@@ -323,7 +323,7 @@ export default class ScoreBoard extends ParentObject {
     const boxWidth = parentSize.width * 0.95;
     const boxHeight = parentSize.height * 0.58;
     const x = coord.x + parentSize.width / 2 - boxWidth / 2;
-    const y = coord.y + parentSize.height * 0.9;
+    const y = coord.y + parentSize.height * 0.98;
 
     context.save();
     context.fillStyle = 'rgba(28, 18, 18, 0.88)';

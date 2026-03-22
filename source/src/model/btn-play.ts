@@ -10,7 +10,7 @@ export default class PlayButton extends Parent {
     this.initialWidth = 0.38;
     this.coordinate = {
       x: 0.259,
-      y: 0.765
+      y: 0.782
     };
     this.active = true;
   }
