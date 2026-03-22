@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Birthday Quest</title>
+  <meta
+    name="description"
+    content="A mobile-first birthday game with mini challenges and a Frankfurt-inspired final flight."
+  >
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Grotesk:wght@400;500;700&display=swap"
+    rel="stylesheet"
+  >
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <main class="page">
+    <section class="intro-copy">
+      <p class="eyebrow">HTML5 birthday mini-game</p>
+      <h1>Birthday Quest</h1>
+      <p class="lede">
+        Three short challenges unlock a final flight over Frankfurt. Beat the skyline,
+        collect a few euros, and the secret password appears.
+      </p>
+    </section>
+
+    <section class="game-shell" aria-label="Birthday Quest game area">
+      <div class="canvas-wrap">
+        <canvas id="gameCanvas" width="390" height="844" aria-label="Birthday Quest canvas"></canvas>
+        <div id="overlay" class="overlay">
+          <p id="overlayEyebrow" class="overlay-eyebrow"></p>
+          <h2 id="overlayTitle"></h2>
+          <p id="overlayText" class="overlay-text"></p>
+          <div class="overlay-actions">
+            <button id="primaryButton" class="button button-primary" type="button"></button>
+            <button id="secondaryButton" class="button button-secondary" type="button" hidden></button>
+          </div>
+          <p id="overlayHint" class="overlay-hint"></p>
+        </div>
+      </div>
+      <div class="status-bar">
+        <span>Mobile first</span>
+        <span>Pure HTML/CSS/JS</span>
+        <span>GitHub Pages ready</span>
+      </div>
+    </section>
+  </main>
+
+  <noscript>This game needs JavaScript enabled.</noscript>
+  <script src="./game.js"></script>
+</body>
+</html>

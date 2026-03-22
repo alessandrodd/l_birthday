@@ -1,0 +1,11 @@
+{
+  "name": "birthday-quest",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Static HTML5 birthday game for GitHub Pages",
+  "scripts": {
+    "check": "node --check game.js",
+    "preview": "python3 -m http.server 4173",
+    "deploy:help": "bash scripts/deploy-gh-pages.sh"
+  }
+}

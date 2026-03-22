@@ -1,0 +1,234 @@
+:root {
+  --bg-top: #f3cf99;
+  --bg-bottom: #24476a;
+  --card: rgba(14, 26, 43, 0.78);
+  --card-border: rgba(255, 255, 255, 0.16);
+  --ink: #f7f1e8;
+  --muted: rgba(247, 241, 232, 0.72);
+  --accent: #ffcf4b;
+  --accent-strong: #ff8d3b;
+  --accent-soft: #8dc6ff;
+  --shadow: 0 24px 60px rgba(7, 16, 31, 0.35);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  color: var(--ink);
+  font-family: "Space Grotesk", "Segoe UI", sans-serif;
+  background:
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.34), transparent 24%),
+    radial-gradient(circle at 80% 18%, rgba(255, 207, 75, 0.2), transparent 20%),
+    linear-gradient(180deg, var(--bg-top) 0%, #a86c5c 28%, #4f4f78 58%, var(--bg-bottom) 100%);
+}
+
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  inset: auto;
+  border-radius: 999px;
+  filter: blur(18px);
+  pointer-events: none;
+}
+
+body::before {
+  width: 16rem;
+  height: 16rem;
+  top: 2rem;
+  right: -4rem;
+  background: rgba(255, 190, 120, 0.3);
+}
+
+body::after {
+  width: 20rem;
+  height: 20rem;
+  bottom: -6rem;
+  left: -7rem;
+  background: rgba(120, 186, 255, 0.18);
+}
+
+.page {
+  width: min(1120px, calc(100vw - 2rem));
+  margin: 0 auto;
+  padding: 2rem 0 3rem;
+  display: grid;
+  gap: 1.5rem;
+}
+
+.intro-copy {
+  max-width: 42rem;
+}
+
+.eyebrow,
+.overlay-eyebrow {
+  margin: 0 0 0.9rem;
+  color: var(--accent);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.intro-copy h1,
+.overlay h2 {
+  margin: 0;
+  font-family: "Press Start 2P", monospace;
+  line-height: 1.15;
+}
+
+.intro-copy h1 {
+  font-size: clamp(1.9rem, 5vw, 3.4rem);
+}
+
+.lede {
+  margin: 1rem 0 0;
+  max-width: 36rem;
+  color: rgba(247, 241, 232, 0.9);
+  font-size: 1.04rem;
+  line-height: 1.55;
+}
+
+.game-shell {
+  width: 100%;
+  display: grid;
+  gap: 0.9rem;
+}
+
+.canvas-wrap {
+  position: relative;
+  width: min(100%, 460px);
+  margin: 0 auto;
+  border: 1px solid var(--card-border);
+  border-radius: 30px;
+  padding: 12px;
+  background: rgba(12, 20, 34, 0.48);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(14px);
+}
+
+#gameCanvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 22px;
+  background: #0d1630;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  touch-action: none;
+}
+
+.overlay {
+  position: absolute;
+  inset: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 1.25rem;
+  border-radius: 22px;
+  background:
+    linear-gradient(180deg, rgba(5, 10, 22, 0.02) 0%, rgba(5, 10, 22, 0.7) 46%, rgba(5, 10, 22, 0.92) 100%);
+}
+
+.overlay[hidden] {
+  display: none;
+}
+
+.overlay h2 {
+  font-size: clamp(1rem, 2vw, 1.25rem);
+}
+
+.overlay-text,
+.overlay-hint {
+  margin: 0.85rem 0 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.overlay-actions {
+  display: flex;
+  gap: 0.7rem;
+  margin-top: 1.2rem;
+}
+
+.button {
+  appearance: none;
+  border: 0;
+  border-radius: 999px;
+  padding: 0.95rem 1.1rem;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 160ms ease, filter 160ms ease, opacity 160ms ease;
+}
+
+.button:hover,
+.button:focus-visible {
+  transform: translateY(-1px);
+  filter: brightness(1.04);
+}
+
+.button-primary {
+  color: #1a1820;
+  background: linear-gradient(135deg, var(--accent) 0%, #ffd98a 100%);
+}
+
+.button-secondary {
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.status-bar {
+  width: min(100%, 460px);
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  color: rgba(247, 241, 232, 0.82);
+  font-size: 0.84rem;
+}
+
+@media (max-width: 640px) {
+  .page {
+    width: min(100vw - 1rem, 460px);
+    padding-top: 1rem;
+    padding-bottom: 2rem;
+  }
+
+  .intro-copy {
+    padding: 0 0.2rem;
+  }
+
+  .lede {
+    font-size: 0.97rem;
+  }
+
+  .canvas-wrap {
+    border-radius: 24px;
+    padding: 8px;
+  }
+
+  .overlay {
+    inset: 8px;
+    padding: 1rem;
+  }
+
+  .overlay-actions {
+    flex-direction: column;
+  }
+
+  .status-bar {
+    font-size: 0.78rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+}
