@@ -45,6 +45,8 @@ export default class GetReady extends ParentClass implements IScreenChangerObjec
   private coins: IEuroCoin[];
   private coinImage: HTMLImageElement | undefined;
   private nextCoinSpawn: number;
+  private speedMultiplier: number;
+  private survivalTime: number;
 
   constructor(game: MainGameController) {
     super();
@@ -73,6 +75,8 @@ export default class GetReady extends ParentClass implements IScreenChangerObjec
     this.coins = [];
     this.coinImage = void 0;
     this.nextCoinSpawn = .9;
+    this.speedMultiplier = 1;
+    this.survivalTime = 0;
 
     this.transition.setEvent([0.99, 1], this.reset.bind(this));
   }
@@ -100,6 +104,8 @@ export default class GetReady extends ParentClass implements IScreenChangerObjec
     this.showScoreBoard = false;
     this.coins = [];
     this.nextCoinSpawn = .9;
+    this.speedMultiplier = 1;
+    this.survivalTime = 0;
     this.scoreBoard.hide();
     this.bird.reset();
   }
@@ -138,6 +144,10 @@ export default class GetReady extends ParentClass implements IScreenChangerObjec
       );
       return;
     }
+
+    this.survivalTime += dt;
+    this.speedMultiplier = Math.min(1.5, 1 + this.survivalTime * 0.012);
+    this.pipeGenerator.setSpeedMultiplier(this.speedMultiplier);
 
     this.bannerInstruction.Update(dt);
     this.updateCoins(dt);
@@ -245,7 +255,7 @@ export default class GetReady extends ParentClass implements IScreenChangerObjec
       }
     }
 
-    const speed = this.canvasSize.width * GAME_SPEED;
+    const speed = this.canvasSize.width * GAME_SPEED * this.speedMultiplier;
     const birdX = this.bird.coordinate.x;
     const birdY = this.bird.coordinate.y;
 

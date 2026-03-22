@@ -70,10 +70,10 @@ export const BIRD_INITIAL_DIMENSION: IDimension = {
 export const PIPE_DISTANCE = 0.392;
 
 // Holl size of pipe. Based on canvas height. (0 - 1)
-export const PIPE_HOLL_SIZE = 0.176;
+export const PIPE_HOLL_SIZE = 0.1;
 
 // Minimum gap of pipe holl to very top and platform. Based on height. (0 - 1)
-export const PIPE_MIN_GAP = 0.194;
+export const PIPE_MIN_GAP = 0.15;
 
 // Initial Pipe Dimension
 export const PIPE_INITIAL_DIMENSION: IDimension = {

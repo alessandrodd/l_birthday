@@ -50,6 +50,7 @@ export default class PipeGenerator {
   private canvasSize: IDimension;
 
   private pipeColor: IPipeColor;
+  private speedMultiplier: number;
 
   constructor() {
     this.range = { max: 0, min: 0 };
@@ -62,10 +63,12 @@ export default class PipeGenerator {
       height: 0
     };
     this.pipeColor = 'ecb';
+    this.speedMultiplier = 1;
   }
 
   public reset(): void {
     this.pipes.splice(0, this.pipes.length);
+    this.speedMultiplier = 1;
     this.resize({
       max: this.range.max,
       width: this.canvasSize.width,
@@ -119,12 +122,17 @@ export default class PipeGenerator {
     };
   }
 
+  public setSpeedMultiplier(multiplier: number): void {
+    this.speedMultiplier = multiplier;
+  }
+
   public Update(dt: number): void {
     if (this.needPipe()) {
       const pipe = new Pipe();
 
       pipe.init();
       pipe.use(this.pipeColor);
+      pipe.setSpeedMultiplier(this.speedMultiplier);
 
       pipe.resize(this.canvasSize);
 
@@ -133,6 +141,7 @@ export default class PipeGenerator {
     }
 
     for (let index = 0; index < this.pipes.length; index++) {
+      this.pipes[index].setSpeedMultiplier(this.speedMultiplier);
       this.pipes[index].Update(dt);
       if (this.pipes[index].isOut()) {
         this.pipes.splice(index, 1);

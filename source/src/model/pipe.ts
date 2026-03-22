@@ -338,6 +338,7 @@ export default class Pipe extends ParentClass {
 
   private images: Map<string, HTMLCanvasElement>;
   private color: IPipeColor;
+  private speedMultiplier: number;
 
   constructor() {
     super();
@@ -354,6 +355,7 @@ export default class Pipe extends ParentClass {
       top: { width: 0, height: 0 },
       bottom: { width: 0, height: 0 }
     };
+    this.speedMultiplier = 1;
   }
 
   public init(): void {
@@ -409,6 +411,10 @@ export default class Pipe extends ParentClass {
 
   public use(select: IPipeColor): void {
     this.color = select;
+  }
+
+  public setSpeedMultiplier(multiplier: number): void {
+    this.speedMultiplier = multiplier;
   }
 
   public collisionHalfWidth(): number {
@@ -506,7 +512,7 @@ export default class Pipe extends ParentClass {
   }
 
   public Update(dt: number): void {
-    this.coordinate.x -= this.velocity.x * dt;
+    this.coordinate.x -= this.velocity.x * this.speedMultiplier * dt;
   }
 
   public Display(context: CanvasRenderingContext2D): void {
