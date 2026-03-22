@@ -1,10 +1,12 @@
 {
-  "name": "birthday-quest",
+  "name": "laura-flappy-pages",
   "private": true,
   "version": "1.0.0",
-  "description": "Static HTML5 birthday game for GitHub Pages",
+  "description": "GitHub Pages wrapper for the Laura-themed Flappy Bird clone",
   "scripts": {
-    "check": "node --check game.js",
+    "install:source": "npm --prefix source ci",
+    "build": "npm --prefix source run build && cp -a source/dist/. .",
+    "check": "npm --prefix source run lint",
     "preview": "python3 -m http.server 4173",
     "deploy:help": "bash scripts/deploy-gh-pages.sh"
   }

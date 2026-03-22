@@ -1,33 +1,31 @@
-# Birthday Quest
+# Laura Flappy
 
-Mobile-first HTML5 birthday game built as a static site for GitHub Pages.
+Laura-themed Flappy Bird clone based on the upstream project at `jxmked/Flappybird`.
 
-## What is included
+The playable static build lives at the repo root for GitHub Pages.
+The editable source project lives in [source](/home/ubuntu/repos/l_birthday/source).
 
-- `index.html`: page shell
-- `styles.css`: responsive layout and visual styling
-- `game.js`: full game logic in plain JavaScript
+## What changed
 
-## Game flow
+- kept the upstream Flappy Bird gameplay
+- replaced the stock bird frames with a Laura-inspired flying face sprite
+- adjusted the app metadata and GitHub Pages path for this repository
 
-1. Cinema challenge: collect tickets, avoid projector beams
-2. Music challenge: tap in time when notes cross the spotlight
-3. Book challenge: match the memory cards
-4. Frankfurt Flight: flappy-style finale with ECB-inspired buildings and euro coins
-5. Final screen: reveals the password for the gift
+## Local workflow
 
-## Quick customization
+Install the upstream dependencies:
 
-Edit the `CONFIG` object at the top of [game.js](/home/ubuntu/repos/l_birthday/game.js):
+```bash
+npm run install:source
+```
 
-- `recipientName`
-- `secretPassword`
-- `finaleMessage`
-- `voucherHint`
+Rebuild the site from source and sync the compiled output to the repo root:
 
-## Local preview
+```bash
+npm run build
+```
 
-Run a simple static server from the repo root:
+Preview the static site:
 
 ```bash
 npm run preview
@@ -35,19 +33,19 @@ npm run preview
 
 Then open `http://localhost:4173`.
 
-If you prefer, you can also run:
-
-```bash
-bash scripts/preview.sh
-```
-
 ## GitHub Pages
 
-Push these files to a GitHub repository and enable GitHub Pages from the repository root.
+This repo is set up to publish the built static files from the root folder.
 
-Because this is a plain static site, no build step is required.
+If you rebuild locally, commit the updated root files and push them:
 
-For a reminder of the exact steps:
+```bash
+git add .
+git commit -m "Update Laura Flappy"
+git push
+```
+
+For a reminder of the Pages steps:
 
 ```bash
 npm run deploy:help
