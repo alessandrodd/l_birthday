@@ -16,16 +16,114 @@ import ParentClass from '../abstracts/parent-class';
 import PipeGenerator from '../model/pipe-generator';
 import ScoreBoard from '../model/score-board';
 import Sfx from '../model/sfx';
-import SpriteDestructor from '../lib/sprite-destructor';
 
 export type IGameState = 'died' | 'playing' | 'none';
 
-interface IEuroCoin {
+type IBonusType = 'euro' | 'book' | 'vinyl';
+
+interface IBonusItem {
   x: number;
   y: number;
   size: number;
   wobble: number;
   collected: boolean;
+  type: IBonusType;
+}
+
+function createBonusCanvas(size: number): HTMLCanvasElement {
+  const canvas = document.createElement('canvas');
+  canvas.width = size;
+  canvas.height = size;
+  return canvas;
+}
+
+function createEuroSprite(): HTMLCanvasElement {
+  const canvas = createBonusCanvas(72);
+  const context = canvas.getContext('2d')!;
+  context.fillStyle = '#ffd84a';
+  context.beginPath();
+  context.arc(36, 36, 28, 0, Math.PI * 2);
+  context.fill();
+  context.strokeStyle = '#c88d12';
+  context.lineWidth = 4;
+  context.beginPath();
+  context.arc(36, 36, 24, 0, Math.PI * 2);
+  context.stroke();
+  context.fillStyle = '#7a5605';
+  context.font = 'bold 34px sans-serif';
+  context.textAlign = 'center';
+  context.textBaseline = 'middle';
+  context.fillText('€', 36, 39);
+  return canvas;
+}
+
+function createBookSprite(): HTMLCanvasElement {
+  const canvas = createBonusCanvas(72);
+  const context = canvas.getContext('2d')!;
+  context.fillStyle = '#f8f1e2';
+  context.fillRect(10, 10, 52, 52);
+  context.strokeStyle = '#6e4d39';
+  context.lineWidth = 4;
+  context.strokeRect(10, 10, 52, 52);
+  context.fillStyle = '#c4574a';
+  context.fillRect(10, 10, 12, 52);
+  context.fillStyle = '#d8c7a0';
+  context.fillRect(28, 18, 24, 3);
+  context.fillRect(28, 25, 20, 3);
+  context.fillStyle = '#b23f44';
+  context.fillRect(18, 34, 42, 24);
+  context.strokeStyle = '#7d6454';
+  context.lineWidth = 2;
+  context.strokeRect(18, 34, 42, 24);
+  context.fillStyle = '#fff7e8';
+  context.font = 'bold 10px sans-serif';
+  context.textAlign = 'center';
+  context.textBaseline = 'middle';
+  context.fillText('MURA', 39, 42);
+  context.fillText('KAMI', 39, 52);
+  return canvas;
+}
+
+function createVinylSprite(): HTMLCanvasElement {
+  const canvas = createBonusCanvas(72);
+  const context = canvas.getContext('2d')!;
+  context.fillStyle = '#1f2230';
+  context.beginPath();
+  context.arc(36, 36, 28, 0, Math.PI * 2);
+  context.fill();
+  context.strokeStyle = '#4d556d';
+  context.lineWidth = 3;
+  context.beginPath();
+  context.arc(36, 36, 20, 0, Math.PI * 2);
+  context.stroke();
+  context.beginPath();
+  context.arc(36, 36, 12, 0, Math.PI * 2);
+  context.stroke();
+  context.fillStyle = '#3c5fd1';
+  context.beginPath();
+  context.arc(36, 36, 9, 0, Math.PI * 2);
+  context.fill();
+  context.fillStyle = '#ffd84a';
+  context.beginPath();
+  context.arc(36, 36, 3, 0, Math.PI * 2);
+  context.fill();
+  context.strokeStyle = '#ffd84a';
+  context.lineWidth = 3;
+  context.beginPath();
+  context.moveTo(18, 24);
+  context.lineTo(52, 17);
+  context.stroke();
+  context.fillStyle = '#f4f7fb';
+  context.fillRect(1, 28, 70, 16);
+  context.strokeStyle = '#26354d';
+  context.lineWidth = 2;
+  context.strokeRect(1, 28, 70, 16);
+  context.fillStyle = '#1e3f8a';
+  context.font = 'bold 11px sans-serif';
+  context.textAlign = 'center';
+  context.textBaseline = 'middle';
+  context.fillText('COLDPLAY', 36, 36);
+  return canvas;
 }
 
 export default class GetReady extends ParentClass implements IScreenChangerObject {
@@ -42,8 +140,8 @@ export default class GetReady extends ParentClass implements IScreenChangerObjec
   private hideBird: boolean;
   private flashScreen: FlashScreen;
   private showScoreBoard: boolean;
-  private coins: IEuroCoin[];
-  private coinImage: HTMLImageElement | undefined;
+  private coins: IBonusItem[];
+  private bonusSprites: Map<IBonusType, HTMLCanvasElement>;
   private nextCoinSpawn: number;
   private speedMultiplier: number;
   private survivalTime: number;
@@ -73,7 +171,7 @@ export default class GetReady extends ParentClass implements IScreenChangerObjec
     this.hideBird = false;
     this.showScoreBoard = false;
     this.coins = [];
-    this.coinImage = void 0;
+    this.bonusSprites = new Map<IBonusType, HTMLCanvasElement>();
     this.nextCoinSpawn = .9;
     this.speedMultiplier = 1;
     this.survivalTime = 0;
@@ -89,7 +187,9 @@ export default class GetReady extends ParentClass implements IScreenChangerObjec
     this.setButtonEvent();
     this.flashScreen.init();
     this.transition.init();
-    this.coinImage = SpriteDestructor.asset('coin-shine-gold');
+    this.bonusSprites.set('euro', createEuroSprite());
+    this.bonusSprites.set('book', createBookSprite());
+    this.bonusSprites.set('vinyl', createVinylSprite());
   }
 
   public reset(): void {
@@ -128,7 +228,6 @@ export default class GetReady extends ParentClass implements IScreenChangerObjec
 
     if (!this.bird.alive) {
       this.game.bgPause = true;
-      this.updateCoins(dt);
       this.bird.Update(dt);
       return;
     }
@@ -146,7 +245,7 @@ export default class GetReady extends ParentClass implements IScreenChangerObjec
     }
 
     this.survivalTime += dt;
-    this.speedMultiplier = Math.min(1.5, 1 + this.survivalTime * 0.012);
+    this.speedMultiplier = Math.min(1.62, 1 + this.survivalTime * 0.016);
     this.pipeGenerator.setSpeedMultiplier(this.speedMultiplier);
 
     this.bannerInstruction.Update(dt);
@@ -234,15 +333,16 @@ export default class GetReady extends ParentClass implements IScreenChangerObjec
   }
 
   private spawnCoin(): void {
-    if (!this.coinImage) return;
-
     const size = this.canvasSize.width * 0.09;
+    const roll = Math.random();
+    const type: IBonusType = roll < 0.45 ? 'euro' : roll < 0.73 ? 'book' : 'vinyl';
     this.coins.push({
       x: this.canvasSize.width + size,
       y: this.canvasSize.height * (0.23 + Math.random() * 0.42),
       size,
       wobble: Math.random() * Math.PI * 2,
-      collected: false
+      collected: false,
+      type
     });
   }
 
@@ -279,19 +379,12 @@ export default class GetReady extends ParentClass implements IScreenChangerObjec
   }
 
   private displayCoins(context: CanvasRenderingContext2D): void {
-    if (!this.coinImage) return;
-
     for (const coin of this.coins) {
+      const sprite = this.bonusSprites.get(coin.type);
+      if (!sprite) continue;
       const x = coin.x - coin.size / 2;
       const y = coin.y - coin.size / 2;
-      context.drawImage(this.coinImage, x, y, coin.size, coin.size);
-      context.save();
-      context.fillStyle = '#6f4b00';
-      context.font = `bold ${Math.max(12, coin.size * 0.72)}px sans-serif`;
-      context.textAlign = 'center';
-      context.textBaseline = 'middle';
-      context.fillText('€', coin.x, coin.y + coin.size * 0.03);
-      context.restore();
+      context.drawImage(sprite, x, y, coin.size, coin.size);
     }
   }
 }
