@@ -242,7 +242,7 @@ export default class GetReady extends ParentClass implements IScreenChangerObjec
     }
 
     this.survivalTime += dt;
-    this.speedMultiplier = Math.min(1.8, 1 + this.survivalTime * 0.02);
+    this.speedMultiplier = Math.min(1.8, 1 + this.survivalTime * 0.035);
     this.pipeGenerator.setSpeedMultiplier(this.speedMultiplier);
 
     this.bannerInstruction.Update(dt);
