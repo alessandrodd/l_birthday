@@ -67,20 +67,17 @@ function createBookSprite(): HTMLCanvasElement {
   context.strokeRect(10, 10, 52, 52);
   context.fillStyle = '#c4574a';
   context.fillRect(10, 10, 12, 52);
-  context.fillStyle = '#d8c7a0';
-  context.fillRect(28, 18, 24, 3);
-  context.fillRect(28, 25, 20, 3);
   context.fillStyle = '#b23f44';
-  context.fillRect(18, 34, 42, 24);
+  context.fillRect(16, 24, 44, 32);
   context.strokeStyle = '#7d6454';
   context.lineWidth = 2;
-  context.strokeRect(18, 34, 42, 24);
+  context.strokeRect(16, 24, 44, 32);
   context.fillStyle = '#fff7e8';
-  context.font = 'bold 10px sans-serif';
+  context.font = 'bold 11px sans-serif';
   context.textAlign = 'center';
   context.textBaseline = 'middle';
-  context.fillText('MURA', 39, 42);
-  context.fillText('KAMI', 39, 52);
+  context.fillText('MURA', 38, 35);
+  context.fillText('KAMI', 38, 47);
   return canvas;
 }
 
@@ -114,15 +111,15 @@ function createVinylSprite(): HTMLCanvasElement {
   context.lineTo(52, 17);
   context.stroke();
   context.fillStyle = '#f4f7fb';
-  context.fillRect(1, 28, 70, 16);
+  context.fillRect(0, 27, 72, 18);
   context.strokeStyle = '#26354d';
   context.lineWidth = 2;
-  context.strokeRect(1, 28, 70, 16);
+  context.strokeRect(0, 27, 72, 18);
   context.fillStyle = '#1e3f8a';
-  context.font = 'bold 11px sans-serif';
+  context.font = 'bold 12px sans-serif';
   context.textAlign = 'center';
   context.textBaseline = 'middle';
-  context.fillText('COLDPLAY', 36, 36);
+  context.fillText('COLDPLAY', 36, 36.5);
   return canvas;
 }
 
