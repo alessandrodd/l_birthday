@@ -13,6 +13,7 @@ import Pipe from './pipe';
 import Sfx from './sfx';
 import SceneGenerator from './scene-generator';
 import AssetLoader from '../lib/asset-loader';
+import { getDifficultySettings } from '../game-config';
 import lauraFace from '../assets/l_face_1_cutout_trim.png';
 
 export type IBirdColor = string;
@@ -210,10 +211,14 @@ export default class Bird extends ParentClass {
     this.coordinate.y = Bird.platformHeight * 0.5;
     this.coordinate.x = width * BIRD_X_POSITION;
 
-    this.force = height * BIRD_JUMP_HEIGHT;
+    this.refreshJumpForce();
     this.scaled = rescaleDim(BIRD_INITIAL_DIMENSION, {
       height: height * BIRD_HEIGHT
     });
+  }
+
+  private refreshJumpForce(): void {
+    this.force = this.canvasSize.height * BIRD_JUMP_HEIGHT * getDifficultySettings().jumpMultiplier;
   }
 
   /**
@@ -253,6 +258,7 @@ export default class Bird extends ParentClass {
       return;
     }
 
+    this.refreshJumpForce();
     Sfx.wing();
     this.velocity.y = this.force;
     this.lastCoord = this.coordinate.y;
@@ -377,7 +383,7 @@ export default class Bird extends ParentClass {
       return;
     }
 
-    this.velocity.y += this.canvasSize.height * BIRD_WEIGHT * dt;
+    this.velocity.y += this.canvasSize.height * BIRD_WEIGHT * getDifficultySettings().gravityMultiplier * dt;
 
     this.velocity.y = Math.min(this.velocity.y, this.canvasSize.height * 0.793);
 

@@ -1,4 +1,4 @@
-import { BG_SPEED } from '../constants';
+import { getBackgroundSpeed } from '../constants';
 import { rescaleDim } from '../utils';
 import ParentClass from '../abstracts/parent-class';
 import SpriteDestructor from '../lib/sprite-destructor';
@@ -20,7 +20,7 @@ export default class Background extends ParentClass {
     this.images = new Map<ITheme, HTMLImageElement>();
     this.theme = 'day';
 
-    this.velocity.x = BG_SPEED;
+    this.velocity.x = getBackgroundSpeed();
 
     this.backgroundSize = {
       width: 0,
@@ -76,6 +76,7 @@ export default class Background extends ParentClass {
      * We cannot rely on fps since it is not a constant value.
      * Which means is the game will speed up or slow down based on fps
      * */
+    this.velocity.x = getBackgroundSpeed();
     this.coordinate.x += this.canvasSize.width * this.velocity.x * dt;
     this.coordinate.y += this.velocity.y;
   }

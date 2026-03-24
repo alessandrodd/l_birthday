@@ -7,7 +7,7 @@ import { Fly, BounceIn, TimingEvent } from '../lib/animation';
 import Storage from '../lib/storage';
 import ButtonsHandler from '../buttons';
 import Sfx from './sfx';
-import { PASSWORD_TARGET_SCORE, SECRET_PASSWORD } from '../game-config';
+import { PASSWORD_TARGET_SCORE, SECRET_PASSWORD, getDifficulty } from '../game-config';
 
 export default class ScoreBoard extends ParentObject {
   private static readonly FLAG_SHOW_BANNER = 0b0001;
@@ -320,8 +320,9 @@ export default class ScoreBoard extends ParentObject {
   private displayReward(context: CanvasRenderingContext2D, coord: ICoordinate, parentSize: IDimension): void {
     if (!this.rewardUnlocked) return;
 
+    const hardMode = getDifficulty() === 'hard';
     const boxWidth = parentSize.width * 0.95;
-    const boxHeight = parentSize.height * 0.58;
+    const boxHeight = hardMode ? parentSize.height * 0.42 : parentSize.height * 0.58;
     const x = coord.x + parentSize.width / 2 - boxWidth / 2;
     const y = coord.y + parentSize.height * 0.98;
 
@@ -335,16 +336,25 @@ export default class ScoreBoard extends ParentObject {
     context.fillStyle = '#fff4cf';
     context.font = `bold ${Math.max(13, parentSize.width * 0.052)}px sans-serif`;
     context.fillText('You made it!! :)', x + boxWidth / 2, y + boxHeight * 0.12);
-    context.font = `${Math.max(10, parentSize.width * 0.038)}px sans-serif`;
-    context.fillText(`You reached ${PASSWORD_TARGET_SCORE}+ points. Secret password:`, x + boxWidth / 2, y + boxHeight * 0.29);
-    context.font = `bold ${Math.max(12, parentSize.width * 0.06)}px monospace`;
-    context.fillStyle = '#ffdf73';
-    context.fillText(SECRET_PASSWORD, x + boxWidth / 2, y + boxHeight * 0.45);
-    context.fillStyle = '#fff4cf';
-    context.font = `${Math.max(10, parentSize.width * 0.036)}px sans-serif`;
-    context.fillText('Wishing you the happiest of birthdays,', x + boxWidth / 2, y + boxHeight * 0.64);
-    context.fillText('and congratulations again for signing the new contract :)', x + boxWidth / 2, y + boxHeight * 0.77);
-    context.fillText('Enjoy!', x + boxWidth / 2, y + boxHeight * 0.89);
+    if (hardMode) {
+      context.font = `${Math.max(10, parentSize.width * 0.04)}px sans-serif`;
+      context.fillText(`You reached ${PASSWORD_TARGET_SCORE}+ points in Hard mode.`, x + boxWidth / 2, y + boxHeight * 0.42);
+      context.font = `bold ${Math.max(11, parentSize.width * 0.045)}px sans-serif`;
+      context.fillStyle = '#ffdf73';
+      context.fillText('Wow, you really took up the challenge!!!', x + boxWidth / 2, y + boxHeight * 0.64);
+      context.fillText('Fine, you got an Iced Coffee on me. :) Well done!', x + boxWidth / 2, y + boxHeight * 0.82);
+    } else {
+      context.font = `${Math.max(10, parentSize.width * 0.038)}px sans-serif`;
+      context.fillText(`You reached ${PASSWORD_TARGET_SCORE}+ points. Secret password:`, x + boxWidth / 2, y + boxHeight * 0.29);
+      context.font = `bold ${Math.max(12, parentSize.width * 0.06)}px monospace`;
+      context.fillStyle = '#ffdf73';
+      context.fillText(SECRET_PASSWORD, x + boxWidth / 2, y + boxHeight * 0.45);
+      context.fillStyle = '#fff4cf';
+      context.font = `${Math.max(10, parentSize.width * 0.036)}px sans-serif`;
+      context.fillText('Wishing you the happiest of birthdays,', x + boxWidth / 2, y + boxHeight * 0.64);
+      context.fillText('and congratulations again for signing the new contract :)', x + boxWidth / 2, y + boxHeight * 0.77);
+      context.fillText('Enjoy!', x + boxWidth / 2, y + boxHeight * 0.89);
+    }
     context.restore();
   }
 
