@@ -1,3 +1,5 @@
+import { getDifficultySettings } from './game-config';
+
 /**
  * Environment Contants
  */
@@ -9,9 +11,11 @@
 
 // Pipe and Platform Speed should be the same
 export const GAME_SPEED = 0.3892;
+export const getGameSpeed = (): number => GAME_SPEED * getDifficultySettings().baseSpeedMultiplier;
 
 // Background Speed
 export const BG_SPEED = GAME_SPEED * 0.08;
+export const getBackgroundSpeed = (): number => BG_SPEED * getDifficultySettings().baseSpeedMultiplier;
 
 // Initial Canvas Size. Changing this may cause problem in some cases.
 export const CANVAS_DIMENSION = {
@@ -71,9 +75,11 @@ export const PIPE_DISTANCE = 0.392;
 
 // Holl size of pipe. Based on canvas height. (0 - 1)
 export const PIPE_HOLL_SIZE = 0.060;
+export const getPipeHoleSize = (): number => PIPE_HOLL_SIZE * getDifficultySettings().holeSizeMultiplier;
 
 // Minimum gap of pipe holl to very top and platform. Based on height. (0 - 1)
 export const PIPE_MIN_GAP = 0.13;
+export const getPipeMinGap = (): number => PIPE_MIN_GAP * getDifficultySettings().minGapMultiplier;
 
 // Initial Pipe Dimension
 export const PIPE_INITIAL_DIMENSION: IDimension = {

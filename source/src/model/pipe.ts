@@ -1,4 +1,4 @@
-import { GAME_SPEED, PIPE_HOLL_SIZE } from '../constants';
+import { getGameSpeed, getPipeHoleSize } from '../constants';
 import ParentClass from '../abstracts/parent-class';
 import SceneGenerator from './scene-generator';
 
@@ -350,7 +350,7 @@ export default class Pipe extends ParentClass {
       bottom: { x: 0, y: 0 }
     };
     this.isPassed = false;
-    this.velocity.x = GAME_SPEED;
+    this.velocity.x = getGameSpeed();
     this.scaled = {
       top: { width: 0, height: 0 },
       bottom: { width: 0, height: 0 }
@@ -373,7 +373,7 @@ export default class Pipe extends ParentClass {
   }
 
   public setHollPosition(coordinate: ICoordinate): void {
-    this.hollSize = this.canvasSize.height * PIPE_HOLL_SIZE;
+    this.hollSize = this.canvasSize.height * getPipeHoleSize();
     this.coordinate = coordinate;
   }
 
@@ -390,10 +390,10 @@ export default class Pipe extends ParentClass {
       height: targetHeight
     };
 
-    this.hollSize = this.canvasSize.height * PIPE_HOLL_SIZE;
+    this.hollSize = this.canvasSize.height * getPipeHoleSize();
     this.coordinate.x = width * (oldX / 100);
     this.coordinate.y = height * (oldY / 100);
-    this.velocity.x = width * GAME_SPEED;
+    this.velocity.x = width * getGameSpeed();
 
     this.scaled.top = {
       width: min,
@@ -512,6 +512,7 @@ export default class Pipe extends ParentClass {
   }
 
   public Update(dt: number): void {
+    this.velocity.x = this.canvasSize.width * getGameSpeed();
     this.coordinate.x -= this.velocity.x * this.speedMultiplier * dt;
   }
 

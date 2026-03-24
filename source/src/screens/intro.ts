@@ -13,7 +13,15 @@ import { IScreenChangerObject } from '../lib/screen-changer';
 import ParentClass from '../abstracts/parent-class';
 import { ENV } from '../constants';
 import ButtonsHandler from '../buttons';
-import { GAME_TITLE, PASSWORD_TARGET_SCORE } from '../game-config';
+import { DifficultyMode, GAME_TITLE, PASSWORD_TARGET_SCORE, getDifficulty, setDifficulty } from '../game-config';
+
+interface IDifficultyButton {
+  mode: DifficultyMode;
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+}
 
 export default class Introduction extends ParentClass implements IScreenChangerObject {
   public btnHandler: ButtonsHandler;
@@ -63,6 +71,7 @@ export default class Introduction extends ParentClass implements IScreenChangerO
 
     this.drawTitle(context);
     this.drawGoalText(context);
+    this.drawDifficultySwitch(context);
 
     this.insertAppVersion(context);
   }
@@ -107,6 +116,47 @@ export default class Introduction extends ParentClass implements IScreenChangerO
     context.restore();
   }
 
+  private getDifficultyButtons(): IDifficultyButton[] {
+    const width = this.canvasSize.width * 0.24;
+    const height = this.canvasSize.height * 0.052;
+    const gap = this.canvasSize.width * 0.04;
+    const top = this.canvasSize.height * 0.635;
+    const left = this.canvasSize.width * 0.5 - width - gap / 2;
+
+    return [
+      { mode: 'normal', left, top, width, height },
+      { mode: 'hard', left: left + width + gap, top, width, height }
+    ];
+  }
+
+  private drawDifficultySwitch(context: CanvasRenderingContext2D): void {
+    const buttons = this.getDifficultyButtons();
+    const current = getDifficulty();
+
+    context.save();
+    context.textAlign = 'center';
+    context.fillStyle = '#f8f2df';
+    context.font = `bold ${this.canvasSize.width * 0.03}px sans-serif`;
+    context.fillText('Difficulty', this.canvasSize.width * 0.5, this.canvasSize.height * 0.615);
+
+    for (const button of buttons) {
+      const active = button.mode === current;
+      context.fillStyle = active ? 'rgba(255, 173, 64, 0.95)' : 'rgba(32, 23, 33, 0.75)';
+      context.fillRect(button.left, button.top, button.width, button.height);
+      context.strokeStyle = active ? '#fff0b8' : 'rgba(255, 240, 186, 0.38)';
+      context.lineWidth = 2;
+      context.strokeRect(button.left, button.top, button.width, button.height);
+      context.fillStyle = active ? '#38251f' : '#f8f2df';
+      context.font = `bold ${this.canvasSize.width * 0.028}px sans-serif`;
+      context.fillText(
+        button.mode === 'normal' ? 'Normal' : 'Hard',
+        button.left + button.width / 2,
+        button.top + button.height / 2 + this.canvasSize.height * 0.008
+      );
+    }
+    context.restore();
+  }
+
   private insertAppVersion(context: CanvasRenderingContext2D): void {
     const fSize = this.canvasSize.width * 0.04;
     const bot = this.canvasSize.height * 0.985;
@@ -125,6 +175,15 @@ export default class Introduction extends ParentClass implements IScreenChangerO
   }
 
   public mouseUp(coor: ICoordinate): void {
+    for (const button of this.getDifficultyButtons()) {
+      const withinX = coor.x >= button.left && coor.x <= button.left + button.width;
+      const withinY = coor.y >= button.top && coor.y <= button.top + button.height;
+      if (withinX && withinY) {
+        setDifficulty(button.mode);
+        return;
+      }
+    }
+
     for (const btn of ButtonsHandler.btns) {
       btn.mouseEvent('up', coor);
     }

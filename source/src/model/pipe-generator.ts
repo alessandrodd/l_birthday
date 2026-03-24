@@ -1,4 +1,4 @@
-import { PIPE_DISTANCE, PIPE_MIN_GAP } from '../constants';
+import { PIPE_DISTANCE, getPipeMinGap } from '../constants';
 import { randomClamp } from '../utils';
 import Pipe from './pipe';
 import SceneGenerator from './scene-generator';
@@ -78,7 +78,7 @@ export default class PipeGenerator {
   }
 
   public resize({ max, width, height }: IPipeGeneratorOption): void {
-    this.range = { max, min: height * PIPE_MIN_GAP };
+    this.range = { max, min: height * getPipeMinGap() };
     this.distance = width * PIPE_DISTANCE;
     this.width = width;
     this.canvasSize = { width, height };

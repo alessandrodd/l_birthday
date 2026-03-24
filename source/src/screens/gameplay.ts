@@ -9,7 +9,7 @@ import BannerInstruction from '../model/banner-instruction';
 import BirdModel from '../model/bird';
 import CounterModel from '../model/count';
 import FlashScreen from '../model/flash-screen';
-import { GAME_SPEED } from '../constants';
+import { getGameSpeed } from '../constants';
 import { IScreenChangerObject } from '../lib/screen-changer';
 import MainGameController from '../game';
 import ParentClass from '../abstracts/parent-class';
@@ -352,7 +352,7 @@ export default class GetReady extends ParentClass implements IScreenChangerObjec
       }
     }
 
-    const speed = this.canvasSize.width * GAME_SPEED * this.speedMultiplier;
+    const speed = this.canvasSize.width * getGameSpeed() * this.speedMultiplier;
     const birdX = this.bird.coordinate.x;
     const birdY = this.bird.coordinate.y;
 
