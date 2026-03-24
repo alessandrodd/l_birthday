@@ -27,11 +27,19 @@ export default class Introduction extends ParentClass implements IScreenChangerO
   public btnHandler: ButtonsHandler;
 
   private bird: BirdModel;
+  private difficultyUnlockTaps: number;
+  private difficultyUnlocked: boolean;
+  private titleTapCount: number;
+  private titleEasterEggVisible: boolean;
 
   constructor() {
     super();
     this.bird = new BirdModel();
     this.btnHandler = new ButtonsHandler();
+    this.difficultyUnlockTaps = 0;
+    this.difficultyUnlocked = false;
+    this.titleTapCount = 0;
+    this.titleEasterEggVisible = false;
   }
 
   public init(): void {
@@ -42,6 +50,13 @@ export default class Introduction extends ParentClass implements IScreenChangerO
     for (const btn of ButtonsHandler.btns) {
       btn.active = true;
     }
+
+    ButtonsHandler.ranking.onClick(() => {
+      this.difficultyUnlockTaps += 1;
+      if (this.difficultyUnlockTaps >= 5) {
+        this.difficultyUnlocked = true;
+      }
+    });
   }
 
   public resize(screen_dimension: IDimension): void {
@@ -70,8 +85,11 @@ export default class Introduction extends ParentClass implements IScreenChangerO
     this.bird.Display(context);
 
     this.drawTitle(context);
+    this.drawTitleEasterEgg(context);
     this.drawGoalText(context);
-    this.drawDifficultySwitch(context);
+    if (this.difficultyUnlocked) {
+      this.drawDifficultySwitch(context);
+    }
 
     this.insertAppVersion(context);
   }
@@ -113,6 +131,43 @@ export default class Introduction extends ParentClass implements IScreenChangerO
     context.font = `${this.canvasSize.width * 0.028}px sans-serif`;
     context.fillText(`Reach at least ${PASSWORD_TARGET_SCORE} points`, x, y + 16);
     context.fillText(`to unlock the secret password after Game Over`, x, y + 48);
+    context.restore();
+  }
+
+  private getTitleBounds(): { left: number; right: number; top: number; bottom: number } {
+    const width = this.canvasSize.width * 0.64;
+    const height = this.canvasSize.height * 0.1;
+    const centerX = this.canvasSize.width * 0.5;
+    const centerY = this.canvasSize.height * 0.255;
+
+    return {
+      left: centerX - width / 2,
+      right: centerX + width / 2,
+      top: centerY - height / 2,
+      bottom: centerY + height / 2
+    };
+  }
+
+  private drawTitleEasterEgg(context: CanvasRenderingContext2D): void {
+    if (!this.titleEasterEggVisible) return;
+
+    const width = this.canvasSize.width * 0.72;
+    const height = this.canvasSize.height * 0.09;
+    const left = this.canvasSize.width * 0.5 - width / 2;
+    const top = this.canvasSize.height * 0.34;
+
+    context.save();
+    context.fillStyle = 'rgba(42, 31, 30, 0.78)';
+    context.fillRect(left, top, width, height);
+    context.strokeStyle = 'rgba(255, 219, 151, 0.55)';
+    context.lineWidth = 2;
+    context.strokeRect(left, top, width, height);
+    context.textAlign = 'center';
+    context.fillStyle = '#fff4cf';
+    context.font = `bold ${this.canvasSize.width * 0.025}px sans-serif`;
+    context.fillText('and how did you find this?? you curious little Sherlock!', left + width / 2, top + height * 0.38);
+    context.font = `${this.canvasSize.width * 0.023}px sans-serif`;
+    context.fillText('Ok, you just won a matcha on me. :)', left + width / 2, top + height * 0.7);
     context.restore();
   }
 
@@ -175,12 +230,27 @@ export default class Introduction extends ParentClass implements IScreenChangerO
   }
 
   public mouseUp(coor: ICoordinate): void {
-    for (const button of this.getDifficultyButtons()) {
-      const withinX = coor.x >= button.left && coor.x <= button.left + button.width;
-      const withinY = coor.y >= button.top && coor.y <= button.top + button.height;
-      if (withinX && withinY) {
-        setDifficulty(button.mode);
-        return;
+    if (this.difficultyUnlocked) {
+      for (const button of this.getDifficultyButtons()) {
+        const withinX = coor.x >= button.left && coor.x <= button.left + button.width;
+        const withinY = coor.y >= button.top && coor.y <= button.top + button.height;
+        if (withinX && withinY) {
+          setDifficulty(button.mode);
+          return;
+        }
+      }
+    }
+
+    const titleBounds = this.getTitleBounds();
+    const titleTap =
+      coor.x >= titleBounds.left &&
+      coor.x <= titleBounds.right &&
+      coor.y >= titleBounds.top &&
+      coor.y <= titleBounds.bottom;
+    if (titleTap) {
+      this.titleTapCount += 1;
+      if (this.titleTapCount >= 5) {
+        this.titleEasterEggVisible = true;
       }
     }
 

@@ -8,18 +8,24 @@ interface IDifficultySettings {
   baseSpeedMultiplier: number;
   holeSizeMultiplier: number;
   minGapMultiplier: number;
+  gravityMultiplier: number;
+  jumpMultiplier: number;
 }
 
 const DIFFICULTY_SETTINGS: Record<DifficultyMode, IDifficultySettings> = {
   normal: {
     baseSpeedMultiplier: 1,
     holeSizeMultiplier: 1,
-    minGapMultiplier: 1
+    minGapMultiplier: 1,
+    gravityMultiplier: 1,
+    jumpMultiplier: 1
   },
   hard: {
     baseSpeedMultiplier: 2,
     holeSizeMultiplier: 0.9,
-    minGapMultiplier: 0.9
+    minGapMultiplier: 0.9,
+    gravityMultiplier: 2,
+    jumpMultiplier: 1.5
   }
 };
 
