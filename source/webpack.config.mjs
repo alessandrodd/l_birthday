@@ -304,7 +304,7 @@ export default function (env, config) {
           type: 'asset/resource'
         },
         {
-          test: /\.(wav|mp3|mp4|avi|ogg)$/i,
+          test: /\.(wav|mp3|mp4|avi|ogg|m4a)$/i,
           loader: 'file-loader'
         },
         {

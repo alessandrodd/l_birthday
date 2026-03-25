@@ -1,10 +1,5 @@
 import WebSfx from '../lib/web-sfx';
-import sfDie from '../assets/audio/die.ogg';
-import sfHit from '../assets/audio/hit.ogg';
-import sfPoint from '../assets/audio/point.ogg';
-import sfSwoosh from '../assets/audio/swooshing.ogg';
-import sfTantiAuguri from '../assets/audio/tanti_auguri.ogg';
-import sfWing from '../assets/audio/wing.ogg';
+import { AUDIO_SOURCES } from '../audio-sources';
 
 export default class Sfx {
   public static currentVolume = 1;
@@ -19,31 +14,31 @@ export default class Sfx {
 
   public static die(): void {
     WebSfx.volume(Sfx.currentVolume);
-    WebSfx.play(sfDie);
+    WebSfx.play(AUDIO_SOURCES.die);
   }
 
   public static point(): void {
     WebSfx.volume(Sfx.currentVolume);
-    WebSfx.play(sfPoint);
+    WebSfx.play(AUDIO_SOURCES.point);
   }
 
   public static hit(cb: IEmptyFunction): void {
     WebSfx.volume(Sfx.currentVolume);
-    WebSfx.play(sfHit, cb);
+    WebSfx.play(AUDIO_SOURCES.hit, cb);
   }
 
   public static swoosh(): void {
     WebSfx.volume(Sfx.currentVolume);
-    WebSfx.play(sfSwoosh);
+    WebSfx.play(AUDIO_SOURCES.swoosh);
   }
 
   public static wing(): void {
     WebSfx.volume(Sfx.currentVolume);
-    WebSfx.play(sfWing);
+    WebSfx.play(AUDIO_SOURCES.wing);
   }
 
   public static tantiAuguri(): void {
     WebSfx.volume(Math.min(1, Sfx.currentVolume));
-    WebSfx.play(sfTantiAuguri);
+    WebSfx.play(AUDIO_SOURCES.tantiAuguri);
   }
 }

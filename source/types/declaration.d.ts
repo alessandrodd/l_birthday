@@ -13,6 +13,11 @@ declare module '*.ogg' {
   export default value;
 }
 
+declare module '*.m4a' {
+  const value: string;
+  export default value;
+}
+
 declare module '*.scss';
 declare module '*.sass';
 declare module '*.css';

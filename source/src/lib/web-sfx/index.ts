@@ -35,6 +35,7 @@ export default class WebSfx {
    */
   constructor(files: IWebSfxObject, callback: IEmptyFunction) {
     WebSfx.audioContext = new (AudioContext || webkitAudioContext)();
+    WebSfx.isReady = WebSfx.audioContext.state === 'running';
 
     WebSfx.audioContext.addEventListener('statechange', () => {
       WebSfx.isReady = WebSfx.audioContext.state === 'running';
@@ -58,7 +59,11 @@ export default class WebSfx {
       return;
     }
 
-    if (!WebSfx.isReady) return;
+    if (!WebSfx.isReady) {
+      // Best effort: try to unlock again on next trusted user gesture.
+      void WebSfx.init();
+      return;
+    }
 
     try {
       const context = WebSfx.audioContext!;
@@ -101,10 +106,17 @@ export default class WebSfx {
      * if is set or not since it cannot be created without starting or resuming
      * the audioContext.
      * */
+    if (!WebSfx.audioContext) return;
+
     if (WebSfx.isReady && WebSfx.gainContext !== void 0) return;
 
     // We should start after user event
     await WebSfx.audioContext.resume();
+    WebSfx.isReady = WebSfx.audioContext.state === 'running';
+
+    if (!WebSfx.isReady) return;
+
+    if (WebSfx.gainContext !== void 0) return;
 
     const gain = WebSfx.audioContext.createGain();
 
@@ -127,8 +139,8 @@ export default class WebSfx {
      * */
     for (let i = start; i < end; i++) {
       // Validating files
-      if (!/\.(wav|ogg|mp3)$/i.test(entries[i][1])) {
-        throw new TypeError("WebSfx.contructor accepts 'wav|ogg|mp3' type of files");
+      if (!/\.(wav|ogg|mp3|aac|m4a)$/i.test(entries[i][1])) {
+        throw new TypeError("WebSfx.contructor accepts 'wav|ogg|mp3|aac|m4a' type of files");
       }
 
       loading.push(WebSfx.load_requests(entries[i][0], entries[i][1]));
@@ -156,9 +168,9 @@ export default class WebSfx {
   private static load_requests(name: string, path: string): Promise<ILoadRequest> {
     return new Promise<ILoadRequest>(async (resolve: Function, reject: Function) => {
       try {
-        const response = await fetch(path, { method: 'GET', mode: 'no-cors' });
+        const response = await fetch(path, { method: 'GET' });
 
-        if (!response.ok) throw new TypeError(`Erro while fetching '${path}`);
+        if (!response.ok) throw new TypeError(`Error while fetching '${path}'`);
 
         // We cannot cannot cache array buffer with dettached head
         const buffer = await response.arrayBuffer();
@@ -168,7 +180,7 @@ export default class WebSfx {
 
         resolve({ content, path, name });
       } catch (err) {
-        reject();
+        reject(err);
       }
     });
   }

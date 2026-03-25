@@ -2,14 +2,9 @@ import AssetLoader from './lib/asset-loader';
 
 import SpriteDestructor from './lib/sprite-destructor';
 import WebSfx from './lib/web-sfx';
+import { AUDIO_SOURCES } from './audio-sources';
 import atlas from './assets/atlas.png';
 import lauraFace from './assets/l_face_1_cutout_trim.png';
-import sfDie from './assets/audio/die.ogg';
-import sfHit from './assets/audio/hit.ogg';
-import sfPoint from './assets/audio/point.ogg';
-import sfSwoosh from './assets/audio/swooshing.ogg';
-import sfTantiAuguri from './assets/audio/tanti_auguri.ogg';
-import sfWing from './assets/audio/wing.ogg';
 
 export default (callback: IEmptyFunction): void => {
   let isLoaded = false;
@@ -104,12 +99,12 @@ export default (callback: IEmptyFunction): void => {
 
     new WebSfx(
       {
-        hit: sfHit,
-        wing: sfWing,
-        swoosh: sfSwoosh,
-        die: sfDie,
-        point: sfPoint,
-        tanti_auguri: sfTantiAuguri
+        hit: AUDIO_SOURCES.hit,
+        wing: AUDIO_SOURCES.wing,
+        swoosh: AUDIO_SOURCES.swoosh,
+        die: AUDIO_SOURCES.die,
+        point: AUDIO_SOURCES.point,
+        tanti_auguri: AUDIO_SOURCES.tantiAuguri
       },
       loadCallback
     );

@@ -2,7 +2,7 @@ import { IPromiseResolve } from '../interfaces';
 import { AbstractLoader } from '../abstraction';
 
 export default class AudioLoader extends AbstractLoader {
-  public static regexp = /\.(mp3|wav|ogg|aac)/i;
+  public static readonly regexp = /\.(mp3|wav|ogg|aac|m4a)/i;
 
   public test(): boolean {
     return AudioLoader.regexp.test(this.source);
